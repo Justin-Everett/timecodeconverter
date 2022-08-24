@@ -1,32 +1,41 @@
 const select = document.getElementById("conversion");
 const element = document.getElementById('frm3');
-
-const drop = document.createElement('input');
-const textChild = document.createTextNode("Input time offset (formatted as hh/mm/ss/ff)"); 
-const p = document.createElement('br');
+const drop = document.getElementById('drop');
+const fRate = document.getElementById('fr');
+var frameRate = 25;
+var delay = '';
 
 select.addEventListener('change', function handleChange(event) {
-    if (event.target.value == 2) {
-        element.insertBefore(p, element.firstChild);
-        element.insertBefore(drop, element.firstChild);
-        element.insertBefore(p, element.firstChild);
-        element.insertBefore(textChild, element.firstChild);
-    } else {
-        p.remove();
-        drop.remove();
-        textChild.remove();
-        p.remove();
-    }
-});
+    //clear input box
+    document.getElementById('enter').value = '';
+    //clear output
+    document.getElementById('output').innerHTML = '';
+  });
 
 function doSubmit() {
+    if (fRate.value.length == 0) {
+        frameRate = 25;
+    } else {
+        frameRate = fRate.value;
+    }
+
+    if (drop.value.length == 0) {
+        delay = '00:00:00:00';
+    } else {
+        delay = drop.value;
+    }
+
     if (select.value == 1) {
         //frame
+        let f = (3600*frameRate);
         var a = parseInt(document.getElementById('enter').value);
-        var hours = Math.floor(a/90000);
-        var mins = Math.floor((a%90000)/1500);
-        var sec = Math.floor((a%90000%1500)/25);
-        var frames = Math.floor((a%90000%1500%25));
+        a = a+getFrames(delay);
+        var hours = Math.floor(a/f);
+        var mins = Math.floor((a%f)/(60*frameRate));
+        var sec = Math.floor((a%f%(60*frameRate))/frameRate);
+        var frames = Math.floor((a%f%(60*frameRate)%frameRate));
+        //add delay
+
         //construct string output
         var output = '';
         var c = ':';
@@ -47,14 +56,7 @@ function doSubmit() {
         //time (add delay)
         
         var finalVal = 0;
-        var delay = 0;
         var output = '';
-        
-        if (drop.value.length == 0) {
-            delay = '00:00:00:00';
-        } else {
-            delay = drop.value;
-        }
 
         finalVal = getFrames(document.getElementById('enter').value) - getFrames(delay);
         
@@ -62,11 +64,10 @@ function doSubmit() {
         document.getElementById('output').innerHTML = output;
 
     }
-}
-
-function getFrames(inp) {
+    
+    function getFrames(inp) {
     var thing = inp.split(':');
-    var multiplier = 90000;
+    var multiplier = (3600*frameRate);
     var frameValue = 0;
         for (i=0;i<3;i++) {
             frameValue += parseInt(thing[i]*multiplier);
@@ -74,4 +75,5 @@ function getFrames(inp) {
         }
         frameValue += parseInt(thing[3]);
     return frameValue;
+}
 }
