@@ -1,4 +1,9 @@
-*{
-  background-color: beige;
+* {
+    background-color: beige;
     text-align: center;
+    
+}
+#tbl {
+    margin-left: auto;
+    margin-right: auto;
 }
